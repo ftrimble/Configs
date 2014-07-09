@@ -1,0 +1,1 @@
+/home/trimbf/suckless/dwm/config.h

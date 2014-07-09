@@ -1,1 +1,5 @@
-/home/trimbf/.Xresources
+xterm*faceName: Source Code Pro - Regular:pixelsize=12
+xterm*background: #000000
+xterm*foreground: #9a9da7
+xterm*eightBitInput: false
+xterm*scrollBar: false

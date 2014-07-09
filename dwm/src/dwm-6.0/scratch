@@ -1,0 +1,22 @@
+void rotatestack(const Arg *arg) {
+  Client *c = NULL, *d = NULL, *i;
+
+  if ( !selmon->sel || !selmon->lt[selmon->sellt]->arrange ||
+       (selmon->sel && selmon->sel->isfloating) ) return;
+
+  for ( c = selmon->sel->next; c && !ISVISIBLE(c); c = c->next );
+  if (!c ) for ( c = selmon->clients; c && ISVISIBLE(c); c = c->next );
+
+  for ( i = selmon->clients; i != selmon->sel; i = i->next ) {
+    if ( ISVISIBLE(i) ) d = i;
+    if ( !d ) {
+      for ( ; i; i = i->next ) if ( ISVISIBLE(i) ) d = i;
+    }
+  }
+
+  if ( c && d ) {
+    if ( arg->i > 0 ) pop(c);
+    else pop(d);
+  }
+}
+
