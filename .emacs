@@ -47,13 +47,51 @@
 ; terminal coloring
 (add-hook 'shell-mode-hook 'ansi-color-for-comint-mode-on)
 
+; Style settings
+(global-whitespace-mode 1)
+(setq whitespace-line-column 100)
+(setq whitespace-style '(face tabs trailing lines-tail))
+(setq-default indent-tabs-mode nil)
+(setq-default fill-column 100)
+(setq require-final-newline t)
+
+(defun delete-trailing-newlines ()
+  "Deletes new lines at the end of the file, even the last one"
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (widen)
+      (goto-char (point-max))
+      (delete-blank-lines))))
+
+(defun indent-buffer ()
+  (interactive)
+  (save-excursion
+    (indent-region (point-min) (point-max) nil)
+    ))
+
+;; Insert a copyright header
+(defun insert-header-hook ()
+  (interactive)
+  (save-excursion
+    (save-restriction
+      (goto-char (point-min))
+      (if (and (string= "java" (file-name-extension (buffer-file-name)))
+               (= 0 (count-matches "\\* Copyright (c) [0-9-]+")))
+          (insert (amazon-copyright-statement))))))
+
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-newlines)
+
 ;; open all .tex files in latex-mode
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
+(add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
 ;; enable disabled commands
 (put 'downcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
+(put 'upcase-region 'disabled nil)
 
 ;; shortcuts
 (global-set-key (kbd "M-g h") 'compile)
@@ -89,7 +127,7 @@
 (setq whitespace-style '(face tabs trailing lines-tail))
 (setq-default indent-tabs-mode nil)
 
-(put 'upcase-region 'disabled nil)
+(setq org-startup-intended t)
 
 ; Web browsing
 (setq browse-url-browser-function 'w3-browse-url)
@@ -109,4 +147,3 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
