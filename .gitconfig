@@ -1,0 +1,8 @@
+[user]
+	email = forest@blendlabs.com
+	name = ftrimble
+	signingkey = 0FBD29EB
+[commit]
+	gpgsign = true
+[core]
+	excludesfile = /Users/foresttrimble/.gitignore_global

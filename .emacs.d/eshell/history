@@ -1,0 +1,33 @@
+ls
+ls
+git status
+git pull
+git status
+git status
+cd ..
+ls
+rm setuptools-26.1.0.zip 
+git status
+gits tatus
+git status
+vault server -config=resources/conf/vault/dev -log-level=info
+mkdir -p ../resources/conf/vault/dev
+touch ../resources/conf/vault/dev/.gitignore
+vault server -config=resources/conf/vault/dev -log-level=info
+cd ../
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+cd ../../
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server -config=resources/conf/vault/dev -log-level=info
+vault server
+vault server -config=resources/conf/vault/dev -log-level=info
+ps -ef | grep vault
+ps -ef | grep vault
+vault server -config=resources/conf/vault/dev -log-level=info
