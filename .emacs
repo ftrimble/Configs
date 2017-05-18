@@ -1,11 +1,11 @@
 ;; load directories
+(add-to-list 'load-path "~/.emacs.d/edit-server")
 (add-to-list 'load-path "~/.emacs.d/iedit")
 (add-to-list 'load-path "~/.emacs.d/popup-el")
 (add-to-list 'load-path "~/.emacs.d/auto-complete")
 (add-to-list 'load-path "~/.emacs.d/tern/emacs")
 
 ;; setting up package archives
-(require 'package)
 (require 'package)
 (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -14,6 +14,14 @@
 ;; load libraries
 (require 'auto-complete-config)
 (require 'whitespace)
+(require 'edit-server)
+
+;; edit-server
+(edit-server-start)
+(autoload 'edit-server-maybe-dehtmlize-buffer "edit-server-htmlize" "edit-server-htmlize" t)
+(autoload 'edit-server-maybe-htmlize-buffer   "edit-server-htmlize" "edit-server-htmlize" t)
+(add-hook 'edit-server-start-hook 'edit-server-maybe-dehtmlize-buffer)
+(add-hook 'edit-server-done-hook  'edit-server-maybe-htmlize-buffer)
 
 ;; load resources
 (load "iedit")
@@ -115,6 +123,17 @@
 (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
+;; fixing lint automatically in javascript
+(defun eslint-fix-file ()
+  (interactive)
+  (when (eq major-mode 'js2-mode)
+    (message "eslint --fixing the file" (buffer-file-name))
+    (shell-command (concat "eslintAutoFix " (buffer-file-name)))
+    )
+  )
+
+(add-hook 'before-save-hook 'eslint-fix-file-and-revert)))
+
 ;; enable disabled commands
 (put 'downcase-region 'disabled nil)
 (put 'narrow-to-region 'disabled nil)
@@ -158,21 +177,32 @@
 (setq browse-url-browser-function 'w3-browse-url)
  (autoload 'w3-browse-url "w3" "Ask a WWW browser to show a URL." t)
  ;; optional keyboard short-cut
- (global-set-key "\C-xm" 'browse-url-at-point)
+(global-set-key "\C-xm" 'browse-url-at-point)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
  '(inhibit-startup-screen t)
  '(js2-basic-offset 2 t)
  '(js2-bounce-indent-p t)
  '(js2-highlight-level 3)
+ '(line-number-mode nil)
+ '(tool-bar-mode nil)
  '(typescript-expr-indent-offset 0)
  '(typescript-indent-level 2))
 
+(setenv "PATH" (concat (getenv "PATH") ":/home/forest/.nvm/versions/node/v6.9.2/bin"))
+(setq exec-path (append exec-path '("/home/forest/.nvm/versions/node/v6.9.2/bin")))
 
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  (toggle-read-only)
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  (toggle-read-only))
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -181,22 +211,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default
-    ((t (:inherit nil
-         :stipple nil
-         :background "black"
-         :foreground "white"
-         :inverse-video nil
-         :box nil
-         :strike-through nil
-         :overline nil
-         :underline nil
-         :slant normal
-         :weight normal
-         :height 140
-         :width normal
-         :foundry "nil"
-         :family "Inconsolata")))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "DAMA" :family "Ubuntu Mono")))))
 (setq default-frame-alist
       (append
        '((background-color . "black")
