@@ -128,11 +128,16 @@
   (interactive)
   (when (eq major-mode 'js2-mode)
     (message "eslint --fixing the file" (buffer-file-name))
-    (shell-command (concat "eslintAutoFix " (buffer-file-name)))
+    (shell-command (concat "eslintAutoFix.sh " (buffer-file-name)))
     )
   )
 
-(add-hook 'before-save-hook 'eslint-fix-file-and-revert)))
+(defun eslint-fix-file-and-revert ()
+  (interactive)
+  (eslint-fix-file)
+  (revert-buffer t t))
+
+(add-hook 'after-save-hook #'eslint-fix-file-and-revert)
 
 ;; enable disabled commands
 (put 'downcase-region 'disabled nil)
@@ -194,7 +199,7 @@
  '(typescript-expr-indent-offset 0)
  '(typescript-indent-level 2))
 
-(setenv "PATH" (concat (getenv "PATH") ":/home/forest/.nvm/versions/node/v6.9.2/bin"))
+(setenv "PATH" (concat (getenv "PATH") ":/home/forest/bin:/home/forest/.nvm/versions/node/v6.9.2/bin"))
 (setq exec-path (append exec-path '("/home/forest/.nvm/versions/node/v6.9.2/bin")))
 
 (require 'ansi-color)
