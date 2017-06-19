@@ -1,4 +1,4 @@
-export NVM_DIR="/Users/foresttrimble/.nvm"
+export NVM_DIR="/home/forest/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # ~/.bashrc
 
 # If not running interactively, don't do anything
@@ -31,27 +31,70 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 alias up='cd ..'
 
 # ls aliases
-alias ls='ls -G'
+alias ls='ls -G --color=auto'
 alias la='ls -vAB'
 alias lv='ls -vB'
 alias ll='ls -lvhB'
 alias lal='ls -AvlhB'
 
-alias m='emacs'
-alias sm='sudo emacs'
+function agentdock() {
+    docker ps | grep agent | cut -d' ' -f1
+}
+
+function runagentdock() {
+    docker exec -it $(agentdock) /bin/bash
+}
+
+function rmagentdock() {
+   docker rm -f $(agentdock)
+}
+
+function m() {
+    emacs $1 &
+}
+
+alias mn='emacs -nw'
+alias sm='sudo emacs -nw'
+
+alias vls='vault list'
+alias vcat='vault read'
+
 alias gc='git commit -S'
+alias gs='git status'
+alias gb='git fetch && git checkout'
 alias gp='git push origin HEAD:forest/$(git rev-parse --abbrev-ref HEAD)'
+
+alias yi='yarn install --check-files'
+
+alias gnp='git --no-pager'
+
+alias laponly='xrandr --output HDMI2 --off --output DP1 --off --output eDP1 --mode 1600x900'
+alias allmons='xrandr --output DP1 --left-of eDP1 --mode 2560x1440 --output HDMI2 --left-of DP1 --auto --output eDP1 --mode 1600x900'
+
+alias backendTest='SPECIAL_INSTANCE_ID=dev DEPLOYMENT=test NODE_ENV=dev grunt mochaTest'
+
+function gnewb() {
+    git fetch
+    git checkout -b $1 origin/master
+}
 
 alias sbfab='NODE_ENV=sandbox fab'
 
-PATH=$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin # Add RVM to PATH for scripting
+PATH=$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
 
 
 [ -r "$HOME/.smartcd_config" ] && ( [ -n $BASH_VERSION ] || [ -n $ZSH_VERSION ] ) && source ~/.smartcd_config
 
+source ~/.git-completion.bash
+
 export NODE_ENV=dev
 export DEPLOYMENT=blend-borrower
+export TENANT_LIST=blend-borrower
 export VAULT_ADDR=https://vault.sandbox.centrio.com:8200
+export ACCOUNT_ID=517567714695
+export JENKINS_ENV=sandbox
 
 GPG_TTY=$(tty)
 export GPG_TTY
+
+export PATH="$HOME/.yarn/bin:$PATH"
