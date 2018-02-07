@@ -121,6 +121,7 @@
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
+(add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
 
 ;; fixing lint automatically in javascript
@@ -183,6 +184,7 @@
  (autoload 'w3-browse-url "w3" "Ask a WWW browser to show a URL." t)
  ;; optional keyboard short-cut
 (global-set-key "\C-xm" 'browse-url-at-point)
+(global-set-key "\C-z" 'query-replace-regexp)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

@@ -28,7 +28,7 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 
 #export http_proxy="localhost:8118"
 
-alias up='cd ..'
+alias up='cd ..;'
 
 # ls aliases
 alias ls='ls -G --color=auto'
@@ -61,26 +61,49 @@ alias vcat='vault read'
 
 alias gc='git commit -S'
 alias gs='git status'
-alias gb='git fetch && git checkout'
+alias gss='git stash save'
+alias gsp='git stash pop'
+alias gd='git diff'
+alias grh='git reset --hard'
+alias gb='git branch'
+alias gbd='git branch -D'
 alias gp='git push origin HEAD:forest/$(git rev-parse --abbrev-ref HEAD)'
+alias gpl='git pull'
+alias gnp='git --no-pager'
+alias gg='git grep'
+alias gnpd='gnp diff'
+alias gnpg='gnp grep'
+
+alias apti='sudo apt-get install'
 
 alias yi='yarn install --check-files'
-
-alias gnp='git --no-pager'
+alias ytf='yarn testFast'
+alias yt='yarn test'
+alias ys='yarn start'
 
 alias laponly='xrandr --output HDMI2 --off --output DP1 --off --output eDP1 --mode 1600x900'
 alias allmons='xrandr --output DP1 --left-of eDP1 --mode 2560x1440 --output HDMI2 --left-of DP1 --auto --output eDP1 --mode 1600x900'
 
 alias backendTest='SPECIAL_INSTANCE_ID=dev DEPLOYMENT=test NODE_ENV=dev grunt mochaTest'
 
+function go() {
+    cd ~/workspace/$1
+}
+
 function gnewb() {
     git fetch
     git checkout -b $1 origin/master
 }
 
-alias sbfab='NODE_ENV=sandbox fab'
+function gnewbs() {
+    git fetch
+    git checkout -b $1 origin/staging
+}
 
-PATH=$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
+alias sbfab='NODE_ENV=sandbox fab'
+alias switchstaging='git pull && git reset origin/master && git stash save && git reset --hard origin/staging && git branch --set-upstream-to=origin/staging && git stash pop'
+
+PATH=$HOME/.mongodb/install/bin:$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
 
 
 [ -r "$HOME/.smartcd_config" ] && ( [ -n $BASH_VERSION ] || [ -n $ZSH_VERSION ] ) && source ~/.smartcd_config
