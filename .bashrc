@@ -86,6 +86,18 @@ alias allmons='xrandr --output DP1 --left-of eDP1 --mode 2560x1440 --output HDMI
 
 alias backendTest='SPECIAL_INSTANCE_ID=dev DEPLOYMENT=test NODE_ENV=dev grunt mochaTest'
 
+# this is quite useful in prod:
+function env_vault() {
+    export VAULT_ADDR="https://vault.${1}.blendlabs.com:8200"
+    vault auth -method=github token=$(cat ~/.ssh/github-vault-token) > /dev/null
+    vault "${@:2}"
+}
+
+alias bvault='env_vault beta "$@"'
+alias penvault='env_vault pentest "$@"'
+alias ppvault='env_vault preprod "$@"'
+alias pvault='env_vault prod "$@"'
+
 function go() {
     cd ~/workspace/$1
 }
