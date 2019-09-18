@@ -70,7 +70,8 @@
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
 
 ;; format options
-(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t :placeOpenBraceOnNewLineForFunctions nil))
+(setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions nil :placeOpenBraceOnNewLineForFunctions nil))
+(setq tide-sync-request-timeout 1)
 
 ;; ui changes
 (line-number-mode 0)
@@ -83,7 +84,7 @@
 
 ;; Style settings
 (global-whitespace-mode 1)
-(setq whitespace-line-column 100)
+(setq whitespace-line-column 120)
 (setq whitespace-style '(face tabs trailing lines-tail))
 (setq-default indent-tabs-mode nil)
 (setq-default fill-column 100)
@@ -120,6 +121,7 @@
 ;; have files open in appropriate major modes.
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)

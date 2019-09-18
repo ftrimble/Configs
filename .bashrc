@@ -26,6 +26,12 @@ export EDITOR="emacs"
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk/
 export _JAVA_AWT_WM_NONREPARENTING=1
 
+export AWS_VAULT_BACKEND=secret-service
+
+export GOROOT=/usr/local/go
+export GOPATH=$HOME/go
+export PATH=$GOPATH/bin:$GOROOT/bin:$PATH
+
 #export http_proxy="localhost:8118"
 
 alias up='cd ..;'
@@ -37,20 +43,27 @@ alias lv='ls -vB'
 alias ll='ls -lvhB'
 alias lal='ls -AvlhB'
 
-function agentdock() {
-    docker ps | grep agent | cut -d' ' -f1
+function dockerprocessname() {
+    docker ps | grep $1 | cut -d' ' -f1
 }
 
-function runagentdock() {
-    docker exec -it $(agentdock) /bin/bash
+function sshdocker() {
+    docker exec -it $(dockerprocessname $1) /bin/bash
 }
 
-function rmagentdock() {
-   docker rm -f $(agentdock)
+function rmdocker() {
+   docker rm -f $(dockerprocessname $1)
 }
 
 function m() {
     emacs $1 &
+}
+
+function addCtx() {
+    file=$1
+    pathToTypes=`echo backend/lib/accountOpening/external/accountOpeningService.ts | sed -E -e 's|backend/||' -e '/^lib/! s|^[^/]+/|../lib/|' -e 's|lib/||' -e 's|[^/]+/|../|g' -e 's|/[^/]*\.\w{2}|/types|'`
+    fileExtension=`echo $file | sed -E -e 's|.*\.(\w{2})|\1|`
+    echo -e "import { Ictx } from ${pathToTypes};"`cat $file` > $file
 }
 
 alias mn='emacs -nw'
@@ -59,21 +72,6 @@ alias sm='sudo emacs -nw'
 alias vls='vault list'
 alias vcat='vault read'
 
-alias gc='git commit -S'
-alias gs='git status'
-alias gss='git stash save'
-alias gsp='git stash pop'
-alias gd='git diff'
-alias grh='git reset --hard'
-alias gb='git branch'
-alias gbd='git branch -D'
-alias gp='git push origin HEAD:forest/$(git rev-parse --abbrev-ref HEAD)'
-alias gpl='git pull'
-alias gnp='git --no-pager'
-alias gg='git grep'
-alias gnpd='gnp diff'
-alias gnpg='gnp grep'
-
 alias apti='sudo apt-get install'
 
 alias yi='yarn install --check-files'
@@ -81,8 +79,8 @@ alias ytf='yarn testFast'
 alias yt='yarn test'
 alias ys='yarn start'
 
-alias laponly='xrandr --output HDMI2 --off --output DP1 --off --output eDP1 --mode 1600x900'
-alias allmons='xrandr --output DP1 --left-of eDP1 --mode 2560x1440 --output HDMI2 --left-of DP1 --auto --output eDP1 --mode 1600x900'
+alias laponly='xrandr --output HDMI-2 --off --output DP-1 --off --output eDP-1 --mode 1600x900'
+alias allmons='xrandr --output DP-1 --left-of eDP-1 --mode 3840x2160 --output HDMI-2 --left-of DP-1 --auto --rotate left --output eDP-1 --mode 1600x900'
 
 alias backendTest='SPECIAL_INSTANCE_ID=dev DEPLOYMENT=test NODE_ENV=dev grunt mochaTest'
 
@@ -101,6 +99,26 @@ alias pvault='env_vault prod "$@"'
 function go() {
     cd ~/workspace/$1
 }
+alias glb='go lending/backend'
+alias ginf='go infrastructure'
+
+# git utilities
+alias gc='git commit -S'
+alias gs='git status'
+alias gss='git stash save'
+alias gsp='git stash pop'
+alias gd='git diff'
+alias grh='git reset --hard'
+alias gb='git branch'
+alias gbd='git branch -D'
+alias gp='git push origin HEAD:$(whoami)/$(git rev-parse --abbrev-ref HEAD)'
+alias gpl='git pull'
+alias gnp='git --no-pager'
+alias gg='git grep'
+alias gnpd='gnp diff'
+alias gnpg='gnp grep'
+alias switchstaging='git pull && git reset origin/master && git stash save && git reset --hard origin/staging && git branch --set-upstream-to=origin/staging && git stash pop'
+alias mergehacks='git pull && git push origin HEAD:master'
 
 function gnewb() {
     git fetch
@@ -112,15 +130,14 @@ function gnewbs() {
     git checkout -b $1 origin/staging
 }
 
+source ~/.git-completion.bash
+
 alias sbfab='NODE_ENV=sandbox fab'
-alias switchstaging='git pull && git reset origin/master && git stash save && git reset --hard origin/staging && git branch --set-upstream-to=origin/staging && git stash pop'
 
 PATH=$HOME/.mongodb/install/bin:$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
 
 
 [ -r "$HOME/.smartcd_config" ] && ( [ -n $BASH_VERSION ] || [ -n $ZSH_VERSION ] ) && source ~/.smartcd_config
-
-source ~/.git-completion.bash
 
 export NODE_ENV=dev
 export DEPLOYMENT=blend-borrower
@@ -129,7 +146,6 @@ export VAULT_ADDR=https://vault.sandbox.centrio.com:8200
 export ACCOUNT_ID=517567714695
 export JENKINS_ENV=sandbox
 
-GPG_TTY=$(tty)
-export GPG_TTY
+export GPG_TTY=$(tty)
 
 export PATH="$HOME/.yarn/bin:$PATH"
