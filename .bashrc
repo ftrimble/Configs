@@ -1,4 +1,4 @@
-export NVM_DIR="/home/forest/.nvm"
+ export NVM_DIR="/home/forest/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" # ~/.bashrc
 
 # If not running interactively, don't do anything
@@ -74,33 +74,31 @@ alias vcat='vault read'
 
 alias apti='sudo apt-get install'
 
-alias yi='yarn install --check-files'
-alias ytf='yarn testFast'
-alias yt='yarn test'
-alias ys='yarn start'
+alias ytf='npm run testFast'
+alias yt='npm test'
+alias ys='npm start'
 
 alias laponly='xrandr --output HDMI-2 --off --output DP-1 --off --output eDP-1 --mode 1600x900'
 alias allmons='xrandr --output DP-1 --left-of eDP-1 --mode 3840x2160 --output HDMI-2 --left-of DP-1 --auto --rotate left --output eDP-1 --mode 1600x900'
 
 alias backendTest='SPECIAL_INSTANCE_ID=dev DEPLOYMENT=test NODE_ENV=dev grunt mochaTest'
 
-# this is quite useful in prod:
-function env_vault() {
-    export VAULT_ADDR="https://vault.${1}.blendlabs.com:8200"
-    vault auth -method=github token=$(cat ~/.ssh/github-vault-token) > /dev/null
-    vault "${@:2}"
+export VAULT_ADDR=https://vault.sandbox.k8s.centrio.com:8200
+function vault_token() {
+    CLIENT_ID=`cat ~/.deployinator_api_key  | jq -r '."Client-Id"'`
+    CLIENT_SECRET=`cat ~/.deployinator_api_key  | jq -r '."Client-Secret"'`
+    export VAULT_TOKEN=`curl -X POST https://deployinator.sandbox.k8s.centrio.com/api/vault.tokens -H "Client-Id: ${CLIENT_ID}" -H "Client-Secret: ${CLIENT_SECRET}" | jq -r '.token'`
 }
 
-alias bvault='env_vault beta "$@"'
-alias penvault='env_vault pentest "$@"'
-alias ppvault='env_vault preprod "$@"'
-alias pvault='env_vault prod "$@"'
-
-function go() {
+function j() {
     cd ~/workspace/$1
 }
-alias glb='go lending/backend'
-alias ginf='go infrastructure'
+
+function jg() {
+    cd ~/workspace/gopath/src/golang.blend.com/project/$1
+}
+alias jlb='j lending/backend'
+alias jinf='j infrastructure'
 
 # git utilities
 alias gc='git commit -S'
@@ -130,22 +128,31 @@ function gnewbs() {
     git checkout -b $1 origin/staging
 }
 
+alias ywc='npm run watchCompile'
+alias ytw='npm run testWatch'
+alias ysr='npm run startNoRecompile'
+alias ys='npm start'
+
+alias avx='unset AWS_VAULT; aws-vault exec'
+alias avxl='unset AWS_VAULT; aws-vault exec lending-dev --duration=8h'
+
 source ~/.git-completion.bash
 
 alias sbfab='NODE_ENV=sandbox fab'
 
-PATH=$HOME/.mongodb/install/bin:$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
+PATH=$HOME/.mongodb/instalfl/bin:$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
 
 
 [ -r "$HOME/.smartcd_config" ] && ( [ -n $BASH_VERSION ] || [ -n $ZSH_VERSION ] ) && source ~/.smartcd_config
 
 export NODE_ENV=dev
+export SERVICE_ENV=dev
 export DEPLOYMENT=blend-borrower
 export TENANT_LIST=blend-borrower
-export VAULT_ADDR=https://vault.sandbox.centrio.com:8200
 export ACCOUNT_ID=517567714695
 export JENKINS_ENV=sandbox
 
 export GPG_TTY=$(tty)
 
-export PATH="$HOME/.yarn/bin:$PATH"
+export GOPATH="$HOME/workspace/gopath"
+export PATH="$HOME/.local/bin:$PATH:/usr/local/go/bin:${GOPATH//://bin:}/bin"

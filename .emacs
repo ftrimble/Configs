@@ -111,12 +111,17 @@
   (save-excursion
     (save-restriction
       (goto-char (point-min))
-      (if (and (string= "java" (file-name-extension (buffer-file-name)))
+      (if (and (string= "ts" (file-name-extension (buffer-file-name)))
                (= 0 (count-matches "\\* Copyright (c) [0-9-]+")))
-          (insert (amazon-copyright-statement))))))
+          (insert "/**
+ * Copyright (c) 2021 - Present. Blend Labs, Inc. All rights reserved
+ * Blend Confidential - Restricted
+ */
+")))))
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'before-save-hook 'delete-trailing-newlines)
+(add-hook 'before-save-hook 'insert-header-hook)
 
 ;; have files open in appropriate major modes.
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
@@ -125,6 +130,37 @@
 (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
 (add-hook 'doc-view-mode-hook 'auto-revert-mode)
+
+;; golang stuff
+(defun set-exec-path-from-shell-PATH ()
+  (let ((path-from-shell (replace-regexp-in-string
+                          "[ \t\n]*$"
+                          ""
+                          (shell-command-to-string "$SHELL --login -i -c 'echo $PATH'"))))
+    (setenv "PATH" path-from-shell)
+    (setq eshell-path-env path-from-shell) ; for eshell users
+    (setq exec-path (split-string path-from-shell path-separator))))
+(when window-system (set-exec-path-from-shell-PATH))
+
+(setenv "GOPATH" "/home/forest/workspace/gopath")
+(add-to-list 'exec-path "/home/forest/workspace/gopath/bin")
+
+(defun my-go-mode-hook ()
+  ; Use goimports instead of go-fmt
+  (setq gofmt-command "goimports")
+  ; Call Gofmt before saving
+  (add-hook 'before-save-hook 'gofmt-before-save)
+  ; Godef jump key binding
+  (local-set-key (kbd "M-.") 'godef-jump)
+)
+(add-hook 'go-mode-hook 'my-go-mode-hook)
+
+(defun auto-complete-for-go ()
+  (auto-complete-mode 1))
+(add-hook 'go-mode-hook 'auto-complete-for-go)
+
+(with-eval-after-load 'go-mode
+   (require 'go-autocomplete))
 
 ;; fixing lint automatically in javascript
 (defun eslint-fix-file ()
@@ -195,10 +231,13 @@
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
  '(inhibit-startup-screen t)
- '(js2-basic-offset 2 t)
+ '(js2-basic-offset 2)
  '(js2-bounce-indent-p t)
  '(js2-highlight-level 3)
  '(line-number-mode nil)
+ '(package-selected-packages
+   (quote
+    (go-autocomplete exec-path-from-shell go-mode tide js2-mode iedit edit-server company auto-complete)))
  '(tool-bar-mode nil)
  '(typescript-expr-indent-offset 0)
  '(typescript-indent-level 2))
