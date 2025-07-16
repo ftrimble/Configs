@@ -134,7 +134,7 @@ alias ysr='npm run startNoRecompile'
 alias ys='npm start'
 
 alias avx='unset AWS_VAULT; aws-vault exec'
-alias avxl='unset AWS_VAULT; aws-vault exec lending-dev --duration=8h'
+alias avxl='unset AWS_VAULT; aws-vault exec sec-lending-dev --duration=8h'
 
 source ~/.git-completion.bash
 

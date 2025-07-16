@@ -64,19 +64,44 @@
 ;; aligns annotation to the right hand side
 (setq company-tooltip-align-annotations t)
 
-;; formats the buffer before saving
-(add-hook 'before-save-hook 'tide-format-before-save)
-
 (add-hook 'typescript-mode-hook #'setup-tide-mode)
+
+(setq tide-tsserver-process-environment '("MAX_OLD_SPACE_SIZE=16000"))
+(setq tide-tsserver-process-environment '("TSS_LOG=-level verbose -file /tmp/tsserver.log"))
+
+
 
 ;; format options
 (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions nil :placeOpenBraceOnNewLineForFunctions nil))
 (setq tide-sync-request-timeout 1)
 
+;; if you use typescript-mode
+(use-package tide
+  :ensure t
+  :after (typescript-mode company flycheck)
+  :hook ((typescript-mode . tide-setup)
+         (typescript-mode . tide-hl-identifier-mode)))
+
+(defun set-exec-path-from-shell-PATH ()
+  "Set up Emacs' `exec-path' and PATH environment variable to match
+that used by the user's shell.
+
+This is particularly useful under Mac OS X and macOS, where GUI
+apps are not started from a shell."
+  (interactive)
+  (let ((path-from-shell (replace-regexp-in-string
+			  "[ \t\n]*$" "" (shell-command-to-string
+					  "$SHELL --login -c 'echo $PATH'"
+						    ))))
+    (setenv "PATH" path-from-shell)
+    (setq exec-path (split-string path-from-shell path-separator))))
+
+(set-exec-path-from-shell-PATH)
+
 ;; ui changes
 (line-number-mode 0)
 (column-number-mode 1)
-(global-linum-mode 1)
+(global-display-line-numbers-mode 1)
 (x-focus-frame nil)
 
 ;; terminal coloring
@@ -125,7 +150,7 @@
 
 ;; have files open in appropriate major modes.
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
-(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+(add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 (add-to-list 'auto-mode-alist '("\\.tsx\\'" . typescript-mode))
 (add-to-list 'auto-mode-alist '("\\.gradle\\'" . groovy-mode))
 (add-to-list 'auto-mode-alist '("\\.groovy\\'" . groovy-mode))
@@ -230,20 +255,20 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(column-number-mode t)
+ '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
- '(js2-basic-offset 2)
+ '(js2-basic-offset 2 t)
  '(js2-bounce-indent-p t)
  '(js2-highlight-level 3)
  '(line-number-mode nil)
  '(package-selected-packages
-   (quote
-    (go-autocomplete exec-path-from-shell go-mode tide js2-mode iedit edit-server company auto-complete)))
+   '(typescript-mode go-autocomplete exec-path-from-shell go-mode tide js2-mode iedit edit-server company auto-complete))
  '(tool-bar-mode nil)
  '(typescript-expr-indent-offset 0)
  '(typescript-indent-level 2))
 
-(setenv "PATH" (concat (getenv "PATH") ":/home/forest/bin:/home/forest/.nvm/versions/node/v6.9.2/bin"))
-(setq exec-path (append exec-path '("/home/forest/.nvm/versions/node/v6.9.2/bin")))
+(setenv "PATH" (concat (getenv "PATH") ":/Users/forest/bin:/Users/forest/.nvm/versions/node/v18.14.2/bin"))
+(setq exec-path (append exec-path '("/home/forest/.nvm/versions/node/v18.14.2/bin")))
 
 (require 'ansi-color)
 (defun colorize-compilation-buffer ()
@@ -259,7 +284,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :foundry "DAMA" :family "Ubuntu Mono")))))
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 120 :width normal :foundry "nil" :family "Monaco")))))
 (setq default-frame-alist
       (append
        '((background-color . "black")
