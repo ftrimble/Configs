@@ -4,19 +4,6 @@
 # If not running interactively, don't do anything
 [ -z "$PS1" ] && return
 
-# append to the history file, don't overwrite it. also, do so on every command (don't lose history)
-shopt -s histappend
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-
-# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
-HISTSIZE=10000
-HISTFILESIZE=20000
-
-# check the window size after each command and, if necessary,
-# update the values of LINES and COLUMNS.
-shopt -s checkwinsize
-shopt -s extglob
-
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
@@ -59,46 +46,16 @@ function m() {
     emacs $1 &
 }
 
-function addCtx() {
-    file=$1
-    pathToTypes=`echo backend/lib/accountOpening/external/accountOpeningService.ts | sed -E -e 's|backend/||' -e '/^lib/! s|^[^/]+/|../lib/|' -e 's|lib/||' -e 's|[^/]+/|../|g' -e 's|/[^/]*\.\w{2}|/types|'`
-    fileExtension=`echo $file | sed -E -e 's|.*\.(\w{2})|\1|`
-    echo -e "import { Ictx } from ${pathToTypes};"`cat $file` > $file
-}
-
 alias mn='emacs -nw'
 alias sm='sudo emacs -nw'
-
-alias vls='vault list'
-alias vcat='vault read'
-
-alias apti='sudo apt-get install'
 
 alias ytf='npm run testFast'
 alias yt='npm test'
 alias ys='npm start'
 
-alias laponly='xrandr --output HDMI-2 --off --output DP-1 --off --output eDP-1 --mode 1600x900'
-alias allmons='xrandr --output DP-1 --left-of eDP-1 --mode 3840x2160 --output HDMI-2 --left-of DP-1 --auto --rotate left --output eDP-1 --mode 1600x900'
-
-alias backendTest='SPECIAL_INSTANCE_ID=dev DEPLOYMENT=test NODE_ENV=dev grunt mochaTest'
-
-export VAULT_ADDR=https://vault.sandbox.k8s.centrio.com:8200
-function vault_token() {
-    CLIENT_ID=`cat ~/.deployinator_api_key  | jq -r '."Client-Id"'`
-    CLIENT_SECRET=`cat ~/.deployinator_api_key  | jq -r '."Client-Secret"'`
-    export VAULT_TOKEN=`curl -X POST https://deployinator.sandbox.k8s.centrio.com/api/vault.tokens -H "Client-Id: ${CLIENT_ID}" -H "Client-Secret: ${CLIENT_SECRET}" | jq -r '.token'`
-}
-
 function j() {
-    cd ~/workspace/$1
+    cd ~/workspace/athena$1
 }
-
-function jg() {
-    cd ~/workspace/gopath/src/golang.blend.com/project/$1
-}
-alias jlb='j lending/backend'
-alias jinf='j infrastructure'
 
 # git utilities
 alias gc='git commit -S'
@@ -109,7 +66,7 @@ alias gd='git diff'
 alias grh='git reset --hard'
 alias gb='git branch'
 alias gbd='git branch -D'
-alias gp='git push'
+alias gp='git push origin HEAD:$(git rev-parse --abbrev-ref HEAD)'
 alias gpl='git fetch && git merge origin/main'
 alias gnp='git --no-pager'
 alias gg='git grep'
@@ -120,32 +77,48 @@ alias mergehacks='git pull && git push origin HEAD:master'
 
 function gnewb() {
     git fetch
-    git worktree add ../$1 -b $1
-    cd ../$1
+    git checkout -b $1 origin/main
 }
+
+function gcp() {
+    gc -am $1
+    gp
+}
+
+function awsl() {
+    export AWS_PROFILE=$1
+    aws sso login
+}
+alias awslp='awsl sandbox-power'
+alias awsla='awsl sandbox-admin'
+
+alias mlf='make format lint-fix'
 
 alias ywc='npm run watchCompile'
 alias ytw='npm run testWatch'
 alias ysr='npm run startNoRecompile'
 alias ys='npm start'
 
-source ~/.git-completion.bash
-
-alias sbfab='NODE_ENV=sandbox fab'
-
 PATH=$HOME/.mongodb/instalfl/bin:$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
 
 
-[ -r "$HOME/.smartcd_config" ] && ( [ -n $BASH_VERSION ] || [ -n $ZSH_VERSION ] ) && source ~/.smartcd_config
-
 export NODE_ENV=dev
 export SERVICE_ENV=dev
-export DEPLOYMENT=blend-borrower
-export TENANT_LIST=blend-borrower
-export ACCOUNT_ID=517567714695
-export JENKINS_ENV=sandbox
 
 export GPG_TTY=$(tty)
 
 export GOPATH="$HOME/workspace/gopath"
 export PATH="$HOME/.local/bin:$PATH:/usr/local/go/bin:${GOPATH//://bin:}/bin"
+export PATH="/opt/homebrew/opt/postgresql@14/bin:$PATH"
+
+export ENVIRONMENT="local"
+
+export DATABASE_URL=postgresql://athena_user:athena_password@localhost:5432/athena
+
+autoload -Uz compinit && compinit
+
+bindkey -e
+
+export WORDCHARS='*?[]~/&;!$%^(){}<>'
+
+eval "$(starship init zsh)"

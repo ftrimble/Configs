@@ -11,10 +11,20 @@
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 
+(use-package elpy
+  :ensure t
+  :init
+  (elpy-enable))
+
 ;; load libraries
 (require 'auto-complete-config)
 (require 'whitespace)
 (require 'edit-server)
+
+(use-package default-text-scale
+  :ensure t
+  :config
+  (default-text-scale-mode))
 
 ;; edit-server
 (edit-server-start)
@@ -130,20 +140,6 @@ apps are not started from a shell."
     (indent-region (point-min) (point-max) nil)
     ))
 
-;; Insert a copyright header
-(defun insert-header-hook ()
-  (interactive)
-  (save-excursion
-    (save-restriction
-      (goto-char (point-min))
-      (if (and (string= "ts" (file-name-extension (buffer-file-name)))
-               (= 0 (count-matches "\\* Copyright (c) [0-9-]+")))
-          (insert "/**
- * Copyright (c) 2021 - Present. Blend Labs, Inc. All rights reserved
- * Blend Confidential - Restricted
- */
-")))))
-
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 (add-hook 'before-save-hook 'delete-trailing-newlines)
 (add-hook 'before-save-hook 'insert-header-hook)
@@ -249,6 +245,9 @@ apps are not started from a shell."
 (global-set-key "\C-xm" 'browse-url-at-point)
 (global-set-key "\C-z" 'query-replace-regexp)
 
+
+(global-set-key (kbd "C-'") 'iedit-rectangle-mode)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -262,7 +261,8 @@ apps are not started from a shell."
  '(js2-highlight-level 3)
  '(line-number-mode nil)
  '(package-selected-packages
-   '(typescript-mode go-autocomplete exec-path-from-shell go-mode tide js2-mode iedit edit-server company auto-complete))
+   '(ansi auto-complete company default-text-scale edit-server elpy exec-path-from-shell
+          go-autocomplete go-mode iedit js2-mode tide typescript-mode))
  '(tool-bar-mode nil)
  '(typescript-expr-indent-offset 0)
  '(typescript-indent-level 2))
@@ -295,3 +295,8 @@ apps are not started from a shell."
          (right-fringe . 0)
          (face-background-color . "FFEEEEEE")
          ) default-frame-alist))
+
+(global-set-key (kbd "C-s-=") 'default-text-scale-increase)
+(global-set-key (kbd "C-s--") 'default-text-scale-decrease)
+
+(setq tide-tsserver-executable "~/workspace/athena/frontend/applicant-ui/node_modules/typescript/bin/tsserver")
