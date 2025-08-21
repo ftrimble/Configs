@@ -99,6 +99,10 @@ alias ytw='npm run testWatch'
 alias ysr='npm run startNoRecompile'
 alias ys='npm start'
 
+function as() {
+    APPLICANT_UI_PORT=300$1 BACKEND_PORT=800$1 make dev-applicant
+}
+
 PATH=$HOME/.mongodb/instalfl/bin:$HOME/bin:$PATH:$HOME/.rvm/bin:$HOME/workspace/smartcd/bin:$HOME/bin/wkhtmltox/bin # Add RVM to PATH for scripting
 
 
