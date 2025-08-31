@@ -91,6 +91,7 @@ function awsl() {
 }
 alias awslp='awsl sandbox-power'
 alias awsla='awsl sandbox-admin'
+alias awslr='awsl sandbox-ro'
 
 alias mlf='make format lint-fix'
 

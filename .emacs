@@ -21,6 +21,13 @@
 (require 'whitespace)
 (require 'edit-server)
 
+(require 'ansi-color)
+(defun display-ansi-colors ()
+  (interactive)
+  (let ((inhibit-read-only t))
+    (ansi-color-apply-on-region (point-min) (point-max))))
+(add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+
 (use-package default-text-scale
   :ensure t
   :config
@@ -141,8 +148,6 @@ apps are not started from a shell."
     ))
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
-(add-hook 'before-save-hook 'delete-trailing-newlines)
-(add-hook 'before-save-hook 'insert-header-hook)
 
 ;; have files open in appropriate major modes.
 (add-to-list 'auto-mode-alist '("\\.tex\\'" . latex-mode))
